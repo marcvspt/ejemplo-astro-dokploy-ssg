@@ -1,0 +1,28 @@
+---
+import StatCard from "@/components/StatCard.astro";
+
+interface Props {
+    eyebrow?: string;
+    title: string;
+    description: string;
+    stats?: Array<{ value: string | number; label: string }>;
+}
+
+const { eyebrow, title, description, stats = [] } = Astro.props;
+---
+
+<section class="hero-block">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1>{title}</h1>
+    <p class="hero-copy">{description}</p>
+
+    {
+        stats.length > 0 && (
+            <div class="stats-grid" aria-label="Resumen de publicaciones">
+                {stats.map((stat) => (
+                    <StatCard value={stat.value} label={stat.label} />
+                ))}
+            </div>
+        )
+    }
+</section>

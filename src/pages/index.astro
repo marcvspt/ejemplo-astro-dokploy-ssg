@@ -1,17 +1,62 @@
 ---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import HeroBlock from "@/components/HeroBlock.astro";
+import PostCard from "@/components/PostCard.astro";
+import type { BlogCardData } from "@/scripts/types";
 
+import { getCollection } from "astro:content";
+
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+
+const extractMinutes = (readTime: string) => {
+	const matchedMinutes = readTime.match(/\d+/);
+	return matchedMinutes ? Number(matchedMinutes[0]) : 0;
+};
+
+const processedPosts: BlogCardData[] = allPosts
+	.map((post) => ({ ...post.data, slug: post.id }))
+	.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+const categories = [...new Set(processedPosts.map((post) => post.category))];
+const totalPosts = processedPosts.length;
+const avgReadTime =
+	totalPosts > 0
+		? Math.round(
+				processedPosts.reduce(
+					(acc, post) => acc + extractMinutes(post.readTime),
+					0,
+				) / totalPosts,
+			)
+		: 0;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+	title="Blog SSG con Astro"
+	description="Mini blog estático con Astro, tipado y estilos personalizados"
+>
+	<main class="page-shell">
+		<HeroBlock
+			eyebrow="Proyecto Demo"
+			title="Blog estático moderno con Astro"
+			description="Probando un flujo real de SSG con colección de contenido, tipado en TypeScript y componentes reutilizables."
+			stats={[
+				{ value: totalPosts, label: "Posts publicados" },
+				{ value: categories.length, label: "Categorías activas" },
+				{ value: `${avgReadTime} min`, label: "Lectura promedio" },
+			]}
+		/>
+
+		<section class="post-grid" aria-label="Listado de publicaciones">
+			{
+				processedPosts.length === 0 && (
+					<p class="empty-state">
+						No hay publicaciones todavía. Crea tu primer markdown en
+						src/data/blog para empezar.
+					</p>
+				)
+			}
+
+			{processedPosts.map((post) => <PostCard post={post} />)}
+		</section>
+	</main>
+</BaseLayout>

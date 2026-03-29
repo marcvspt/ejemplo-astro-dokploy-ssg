@@ -1,43 +1,80 @@
-# Astro Starter Kit: Minimal
+# Mini Blog SSG con Astro
+
+Proyecto de ejemplo para generar un blog estático con Astro usando:
+
+- colección de contenido en Markdown
+- tipado centralizado en TypeScript
+- páginas estáticas generadas con `getStaticPaths`
+- estilos globales personalizados
+
+> Este proyecto se realizó como un ejemplo para desplegar aplicaciones web de Astro con SSG en Dokploy.
+
+## Desplegar para desarrollo
+
+1. Instalar dependencias:
+
+```bash
+pnpm install
+```
+
+2. Inicia el servidor de desarrollo:
 
 ```sh
-pnpm create astro@latest -- --template minimal
+pnpm run dev #http://localhost:4321
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Estructura del proyecto
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+├─ components/
+│  ├─ HeroBlock.astro
+│  ├─ PostCard.astro
+│  ├─ PostHeader.astro
+│  └─ StatCard.astro
+├─ data/blog/
+│  └─ my-first-post.md
+├─ layouts/
+│  ├─ BaseLayout.astro
+│  └─ BlogPostLayout.astro
+├─ pages/
+│  ├─ [...slug].astro
+│  └─ index.astro
+├─ scripts/
+│  └─ types.ts
+├─ styles/
+│  └─ global.css
+└─ content.config.ts
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Componentes
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+| Componente | Propósito | Props |
+|:-----------|:----------|:------|
+| **HeroBlock** | Bloque destacado con título y stats | `eyebrow`, `title`, `description`, `stats` |
+| **PostCard** | Tarjeta de post en grid | `post: BlogCardData` |
+| **PostHeader** | Encabezado y metadata de post | `frontmatter: BlogPostData` |
+| **StatCard** | Métrica individual | `value`, `label` |
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Tipos (TypeScript)
 
-## 🧞 Commands
+Los tipos están centralizados en `src/scripts/types.ts`:
 
-All commands are run from the root of the project, from a terminal:
+```typescript
+export interface BlogPostData {
+  title: string;
+  excerpt: string;
+  date: Date;
+  updated?: Date;
+  readTime: string;
+  category: string;
+  tags: string[];
+  image: string;
+  draft?: boolean;
+  featured?: boolean;
+}
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+export interface BlogCardData extends BlogPostData {
+  slug: string;
+}
+```

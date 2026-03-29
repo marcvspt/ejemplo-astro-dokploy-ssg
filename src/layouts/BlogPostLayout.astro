@@ -1,0 +1,26 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostHeader from "@/components/PostHeader.astro";
+import type { BlogPostData } from "@/scripts/types";
+
+export interface Props {
+    frontmatter: BlogPostData;
+}
+
+const { frontmatter } = Astro.props;
+const { title, excerpt } = frontmatter;
+---
+
+<BaseLayout title={`Blog - ${title}`} description={excerpt}>
+    <main class="page-shell post-shell">
+        <a class="back-link" href="/">Volver al listado</a>
+
+        <article class="post-detail">
+            <PostHeader frontmatter={frontmatter} />
+
+            <section class="prose prose-slate lg:prose-lg post-content">
+                <slot />
+            </section>
+        </article>
+    </main>
+</BaseLayout>
